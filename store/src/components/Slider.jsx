@@ -1,6 +1,7 @@
-import { react, useState} from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@material-ui/icons";
+import { sliderItems } from "../data.js";
 
 const Container = styled.div`
   width: 100%;
@@ -15,31 +16,32 @@ const Arrow = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  background-color: #fff7f7;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   position: absolute;
-  top: 50%;
+  top: 0;
   butom: 0;
   left: ${(props) => props.direction === "left" && "10px"};
   right: ${(props) => props.direction === "right" && "10px"};
   margin: 0px auto;
   opacity: 0.5;
-  z-index: 0;
+  z-index: 2;
 `;
 
 const Wrapper = styled.div`
   height: 100%;
   display: flex;
-  transform: translateX(0wv);
+  transition: all 1.5s ease;
+  transform: translateX(${(props) => props.slideIndex * -100}vw);
 `;
 
 const Slide = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
-  position: relative;
   margin-top: 12px;
   background-color: ${(props) => props.bg};
 `;
@@ -75,47 +77,40 @@ const Button = styled.button`
 `;
 
 function Slider() {
-
-    const [slideIndex, setSlideIndex] = useState(0);
-    const handleClick = (direction) => {};
+  const [slideIndex, setSlideIndex] = useState(0);
+  const handleClick = (direction) => {
+    if (direction === "left") {
+      if (slideIndex === 0) {
+        setSlideIndex(sliderItems > 0? sliderItems - 1 : 2);
+      } else {
+        setSlideIndex(slideIndex < 2 ? slideIndex +1 : 0);
+      }
+    } else {
+      if (slideIndex === sliderItems.length - 1) {
+        setSlideIndex(0);
+      } else {
+        setSlideIndex(slideIndex + 1);
+      }
+    }
+  };
   return (
     <Container>
       <Arrow direction="left" onClick={() => handleClick("left")}>
         <ArrowLeftOutlined />
       </Arrow>
-      <Wrapper>
-        <Slide bg="fcf1ed">
-          <ImageContainer>
-            <Image src="https://picsum.photos/200/300" />
-          </ImageContainer>
-          <InfoContainer>
-            <Title>SUMMER SALE</Title>
-            <Desc>Don't Compromise on Styles</Desc>
-            <Button>Shop Now</Button>
-          </InfoContainer>
-        </Slide>
-
-        <Slide bg="fbf0f4">
-          <ImageContainer>
-            <Image src="https://picsum.photos/200/300" />
-          </ImageContainer>
-          <InfoContainer>
-            <Title>WINTER SALE</Title>
-            <Desc>Don't Compromise on Styles</Desc>
-            <Button>Shop Now</Button>
-          </InfoContainer>
-        </Slide>
-
-        <Slide bg="fcf1ed">
-          <ImageContainer>
-            <Image src="https://picsum.photos/200/300" />
-          </ImageContainer>
-          <InfoContainer>
-            <Title>BLACK FRIDAY SALE</Title>
-            <Desc>Don't Compromise on Styles</Desc>
-            <Button>Shop Now</Button>
-          </InfoContainer>
-        </Slide>
+      <Wrapper slideIndex = {slideIndex}>
+        {sliderItems.map((item, index) => (
+          <Slide key={index} bg={item.bg}>
+            <ImageContainer>
+              <Image src={item.img} />
+            </ImageContainer>
+            <InfoContainer>
+              <Title>{item.title}</Title>
+              <Desc>{item.desc}</Desc>
+              <Button>SHOW NOW</Button>
+            </InfoContainer>
+          </Slide>
+        ))}
       </Wrapper>
       <Arrow direction="right" onClick={() => handleClick("right")}>
         <ArrowRightOutlined />
@@ -123,5 +118,4 @@ function Slider() {
     </Container>
   );
 }
-
 export default Slider;
