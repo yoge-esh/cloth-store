@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Announcement from "../components/Announcement";
 import Slider from "../components/Slider";
+import Categories from "../components/Categories";
 
 
 const Container = styled.div`
@@ -16,6 +17,7 @@ const Home = () => {
       <Announcement />
       <Navbar />
       <Slider />
+      <Categories/>
     </Container>
   );
 };
