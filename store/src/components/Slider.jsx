@@ -1,32 +1,38 @@
+import { ArrowLeftOutlined, ArrowRightOutlined } from "@material-ui/icons";
 import { useState } from "react";
 import styled from "styled-components";
-import { ArrowLeftOutlined, ArrowRightOutlined } from "@material-ui/icons";
-import { sliderItems } from "../data.js";
+import { sliderItems } from "../data";
+import { mobile } from "../responsive";
 
 const Container = styled.div`
   width: 100%;
   height: 100vh;
   display: flex;
   position: relative;
-  margin-top: 12px;
-  overfloew: hidden;
+  overflow: hidden;
+  margin-top: 10px;
+  ${mobile({ display: "none" })}
 `;
 
 const Arrow = styled.div`
   width: 50px;
   height: 50px;
+  background-image: linear-gradient(
+    102.4deg,
+    rgba(253, 189, 85, 1) 7.8%,
+    rgba(249, 131, 255, 1) 100.3%
+  );
   border-radius: 50%;
-  background-color: #fff7f7;
   display: flex;
-  justify-content: center;
   align-items: center;
-  cursor: pointer;
+  justify-content: center;
   position: absolute;
   top: 0;
-  butom: 0;
+  bottom: 0;
   left: ${(props) => props.direction === "left" && "10px"};
   right: ${(props) => props.direction === "right" && "10px"};
-  margin: 0px auto;
+  margin: auto;
+  cursor: pointer;
   opacity: 0.5;
   z-index: 2;
 `;
@@ -42,12 +48,13 @@ const Slide = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
-  margin-top: 12px;
-  background-color: ${(props) => props.bg};
+  align-items: center;
+  background-color: #${(props) => props.bg};
 `;
-const ImageContainer = styled.div`
-  flex: 1;
+
+const ImgContainer = styled.div`
   height: 100%;
+  flex: 1;
 `;
 
 const Image = styled.img`
@@ -62,48 +69,50 @@ const InfoContainer = styled.div`
 const Title = styled.h1`
   font-size: 70px;
 `;
+
 const Desc = styled.p`
   margin: 50px 0px;
   font-size: 20px;
   font-weight: 500;
   letter-spacing: 3px;
 `;
+
 const Button = styled.button`
   padding: 10px;
   font-size: 20px;
-  background-color: transparent;
-  border: none;
   cursor: pointer;
+  background-color: gray;
+  color: white;
+  border: none;
+  transition: all 0.5s ease;
+  &:hover {
+    background-color: crimson;
+    transform: scale(1.1);
+    border-radius: 5px;
+  }
 `;
 
-function Slider() {
+const Slider = () => {
   const [slideIndex, setSlideIndex] = useState(0);
   const handleClick = (direction) => {
     if (direction === "left") {
-      if (slideIndex === 0) {
-        setSlideIndex(sliderItems > 0? sliderItems - 1 : 2);
-      } else {
-        setSlideIndex(slideIndex < 2 ? slideIndex +1 : 0);
-      }
+      setSlideIndex(slideIndex > 0 ? slideIndex - 1 : 2);
     } else {
-      if (slideIndex === sliderItems.length - 1) {
-        setSlideIndex(0);
-      } else {
-        setSlideIndex(slideIndex + 1);
-      }
+      setSlideIndex(slideIndex < 2 ? slideIndex + 1 : 0);
     }
   };
+
   return (
     <Container>
       <Arrow direction="left" onClick={() => handleClick("left")}>
         <ArrowLeftOutlined />
       </Arrow>
-      <Wrapper slideIndex = {slideIndex}>
+      <Wrapper slideIndex={slideIndex}>
         {sliderItems.map((item) => (
-          <Slide key={item.id} bg={item.bg}>
-            <ImageContainer>
+          <Slide bg={item.bg} key={item.id}>
+            <ImgContainer>
               <Image src={item.img} />
-            </ImageContainer>
+            </ImgContainer>
             <InfoContainer>
               <Title>{item.title}</Title>
               <Desc>{item.desc}</Desc>
@@ -117,5 +126,6 @@ function Slider() {
       </Arrow>
     </Container>
   );
-}
+};
+
 export default Slider;
