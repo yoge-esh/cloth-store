@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const User = require("../models/Users");
 const cryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
 
 // REGISTER 
 router.post('/register', async (req, res) => {
@@ -22,34 +23,46 @@ router.post('/register', async (req, res) => {
 
 
 
-
-
 // LOGIN
 router.post("/login", async (req, res) => {
     try {
+
         // find user by username
         const user = await User.findOne({ username: req.body.username });
+
         // if user not found
-        if (!user) {
-            return res.status(400).json({ message: "User not found" });
-        }
-        // decrypt password
-        const decryptedPassword = cryptoJS.AES.decrypt(user.password, process.env.SECRET_KEY).toString(cryptoJS.enc.Utf8);
-        // compare password with decrypted password
-        if (decryptedPassword !== req.body.password) {
-            return res.status(400).json({ message: "Incorrect username or password" });
-        }
+        !user && res.status(404).json({ message: "Wrong User Name" });
+
+        const hashedPassword = cryptoJS.AES.decrypt(
+            user.password,
+            process.env.SECRET_KEY
+        );
+
+        const originalPassword = hashedPassword.toString(cryptoJS.enc.Utf8);
+
+        const inputPassword = req.body.password;
+
+        originalPassword != inputPassword && res.status(404).json({ message: "Wrong Password" });
+
+
+        const accessToken = jwt.sign(
+            {
+                _id: user._id,
+                isAdmin: user.isAdmin,
+            },
+            process.env.JWT_SECRET_KEY
+            // { expireIn: "3d" } // not allwing to use this
+        );
 
         // except password we will see all other data of user with below line
-        const {password, ...others} = user._doc;
-        // login successful
-        res.status(200).json(others);
+        const { password, ...others } = user._doc;
+        // send token to client
+        res.status(200).json({ ...others, accessToken });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
+
 module.exports = router;
-
-
