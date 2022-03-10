@@ -1,37 +1,33 @@
-// requirements 
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongo = require('mongoose');
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const userRoute = require("./routes/user");
+const authRoute = require("./routes/auth");
+const productRoute = require("./routes/product");
+const cartRoute = require("./routes/cart");
+const orderRoute = require("./routes/order");
+const stripeRoute = require("./routes/stripe");
+const cors = require("cors");
 
-
-// import routes
-const userRoutes = require('./routes/user');
-const authRoutes = require('./routes/authentication');
-
-// connect to env file 
-const dotenv = require('dotenv');
 dotenv.config();
-const port = process.env.PORT || 3000;
 
+mongoose
+  .connect(process.env.SERVER_URL)
+  .then(() => console.log("DB Connection Successfull!"))
+  .catch((err) => {
+    console.log(err);
+  });
 
-// connect to mongoDB
-mongo.connect(process.env.SERVER_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.log('Error: ' + err);
-});
-
-
-
-// routes 
+app.use(cors());
 app.use(express.json());
-app.use('/api/auth', authRoutes); // use: /api/auth/register
-app.use('/api/users', userRoutes); 
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/products", productRoute);
+app.use("/api/carts", cartRoute);
+app.use("/api/orders", orderRoute);
+app.use("/api/checkout", stripeRoute);
 
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Backend server is running!");
 });

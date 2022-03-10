@@ -1,32 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// const verifyToken = (req, res, next) => {
-
-//     const authHeader = req.headers.token;
-//     if (authHeader) {
-//         const token = authHeader.split(" ")[1];
-//         jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
-//             if (err) res.status(403).json({ message: "Token is not valid!" });
-//             req.user = user;
-//             next();
-//         });
-//     } else {
-//         return res.status(401).json({ message: "Not Authorized", err:err });
-//     }
-// }
-
-// const verifyTokenAndAuthorization = (req, res, next) => {
-//     verifyToken(req, res, () => {
-//         if (req.user.id === req.params.id || req.user.isAdmin) {
-//             next();
-//         } else {
-//             res.status(403).json({ message: "Not Authorized" });
-//         }
-//     });
-// }
-
-
-
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.token;
     if (authHeader) {
@@ -43,7 +16,7 @@ const verifyToken = (req, res, next) => {
   
   const verifyTokenAndAuthorization = (req, res, next) => {
     verifyToken(req, res, () => {
-      if (req.user.id === req.params.id || req.user.isAdmin) {
+      if (req.user.isAdmin) {
         next();
       } else {
         res.status(403).json("You are not alowed to do that!");
@@ -52,3 +25,7 @@ const verifyToken = (req, res, next) => {
   };
   
 module.exports = { verifyToken, verifyTokenAndAuthorization };
+
+
+
+// 1 hr 8 min 
